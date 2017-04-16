@@ -1,18 +1,27 @@
 #!/bin/bash
 __bash_quran_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-getRandomVerse ()
+getVerseByLine ()
 {
 	translationFile=$__bash_quran_dir/quran-translation.txt
-	lineNum=$(awk -v min=1 -v max=6236 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
-	verseRaw=$(awk 'NR=='$lineNum $translationFile)
 
+	lineNum=$1
+
+	verseRaw=$(awk 'NR=='$lineNum $translationFile)
 	surahNum=$(echo $verseRaw | awk -F'|' '{print $1}')
-	surahName=$(awk 'NR=='$surahNum $__bash_quran_dir/surah-list.txt | awk -F'|' '{print $1}')
-	verseNum=$(echo $verseRaw | awk -F'|' '{print $2}')
 	verseContent=$(echo $verseRaw | sed 's/^[0-9]*|[0-9]*|//')
+	verseNum=$(echo $verseRaw | awk -F'|' '{print $2}')
+	surahName=$(awk 'NR=='$surahNum $__bash_quran_dir/surah-list.txt | awk -F'|' '{print $1}')
+
 	echo $verseContent
 	echo QS. $surahName'('$surahNum')':$verseNum
+}
+
+getRandomVerse ()
+{
+	lineNum=$(awk -v min=1 -v max=6236 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
+
+	getVerseByLine $lineNum
 }
 
 printRandomVerse ()
@@ -24,21 +33,15 @@ printRandomVerse ()
 
 getVerse ()
 {
-	translationFile=$__bash_quran_dir/quran-translation.txt
-
 	surahNum=$(echo $1 | awk -F':' '{print $1}')
 	verseNum=$(echo $1 | awk -F':' '{print $2}')
 	surahInfo=$(awk 'NR=='$surahNum $__bash_quran_dir/surah-list.txt)
-	surahName=$(echo $surahInfo | awk -F'|' '{print $1}')
+
 	totalVerse=$(echo $surahInfo | awk -F'|' '{print $2}')
 	verseInfo=$(echo $surahInfo | awk -F'|' '{print $3}')
 	firstVerseLine=$(echo $verseInfo | awk -F'-' '{print $1}')
 	lastVerseLine=$(echo $verseInfo | awk -F'-' '{print $2}')
 	lineNum=$(( $firstVerseLine + $verseNum - 1 ))
 
-	verseRaw=$(awk 'NR=='$lineNum $translationFile)
-	verseContent=$(echo $verseRaw | sed 's/^[0-9]*|[0-9]*|//')
-
-	echo $verseContent
-	echo QS. $surahName'('$surahNum')':$verseNum
+	getVerseByLine $lineNum
 }
