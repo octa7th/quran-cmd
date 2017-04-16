@@ -1,0 +1,23 @@
+#!/bin/bash
+
+getRandomVerse ()
+{
+	DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+	translationFile=$DIR/quran-translation.txt
+	lineNum=$(awk -v min=1 -v max=6236 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
+	verseRaw=$(awk 'NR=='$lineNum $translationFile)
+
+	surahNum=$(echo $verseRaw | awk -F'|' '{print $1}')
+	surahName=$(awk 'NR=='$surahNum $DIR/surah-list.txt | awk -F'|' '{print $1}')
+	verseNum=$(echo $verseRaw | awk -F'|' '{print $2}')
+	verseContent=$(awk 'NR=='$lineNum $translationFile | sed 's/^[0-9]*|[0-9]*|//')
+	echo $verseContent
+	echo QS. $surahName'('$surahNum')':$verseNum
+}
+
+printRandomVerse ()
+{
+	boxWidth=$(( $(tput cols)*1/2-4 ))
+	getRandomVerse | fold -w $boxWidth -s | boxes -d parchment -p l2r2
+	echo
+}
