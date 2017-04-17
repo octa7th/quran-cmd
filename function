@@ -31,6 +31,12 @@ printRandomVerse ()
 	echo
 }
 
+printRandomByClassification ()
+{
+	$__bash_quran_dir/random_by_classification.js | fold -w $boxWidth -s | boxes -d parchment -p l2r2
+	echo
+}
+
 getVerse ()
 {
 	surahNum=$(echo $1 | awk -F':' '{print $1}')
