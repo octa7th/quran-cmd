@@ -3,15 +3,15 @@ __bash_quran_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 getVerseByLine ()
 {
-	translationFile=$__bash_quran_dir/quran-translation.txt
+	local translationFile=$__bash_quran_dir/quran-translation.txt
 
-	lineNum=$1
+	local lineNum=$1
 
-	verseRaw=$(awk 'NR=='$lineNum $translationFile)
-	surahNum=$(echo $verseRaw | awk -F'|' '{print $1}')
-	verseContent=$(echo $verseRaw | sed 's/^[0-9]*|[0-9]*|//')
-	verseNum=$(echo $verseRaw | awk -F'|' '{print $2}')
-	surahName=$(awk 'NR=='$surahNum $__bash_quran_dir/surah-list.txt | awk -F'|' '{print $1}')
+	local verseRaw=$(awk 'NR=='$lineNum $translationFile)
+	local surahNum=$(echo $verseRaw | awk -F'|' '{print $1}')
+	local verseContent=$(echo $verseRaw | sed 's/^[0-9]*|[0-9]*|//')
+	local verseNum=$(echo $verseRaw | awk -F'|' '{print $2}')
+	local surahName=$(awk 'NR=='$surahNum $__bash_quran_dir/surah-list.txt | awk -F'|' '{print $1}')
 
 	echo $verseContent
 	echo QS. $surahName'('$surahNum')':$verseNum
@@ -19,35 +19,36 @@ getVerseByLine ()
 
 getRandomVerse ()
 {
-	lineNum=$(awk -v min=1 -v max=6236 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
+	local lineNum=$(awk -v min=1 -v max=6236 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
 
 	getVerseByLine $lineNum
 }
 
 printRandomVerse ()
 {
-	boxWidth=$(( $(tput cols)*1/2-4 ))
+	local boxWidth=$(( $(tput cols)*1/2-4 ))
 	getRandomVerse | fold -w $boxWidth -s | boxes -d parchment -p l2r2
 	echo
 }
 
 printRandomByClassification ()
 {
+	local boxWidth=$(( $(tput cols)*1/2-4 ))
 	$__bash_quran_dir/random_by_classification.js | fold -w $boxWidth -s | boxes -d parchment -p l2r2
 	echo
 }
 
 getVerse ()
 {
-	surahNum=$(echo $1 | awk -F':' '{print $1}')
-	verseNum=$(echo $1 | awk -F':' '{print $2}')
-	surahInfo=$(awk 'NR=='$surahNum $__bash_quran_dir/surah-list.txt)
+	local surahNum=$(echo $1 | awk -F':' '{print $1}')
+	local verseNum=$(echo $1 | awk -F':' '{print $2}')
+	local surahInfo=$(awk 'NR=='$surahNum $__bash_quran_dir/surah-list.txt)
 
-	totalVerse=$(echo $surahInfo | awk -F'|' '{print $2}')
-	verseInfo=$(echo $surahInfo | awk -F'|' '{print $3}')
-	firstVerseLine=$(echo $verseInfo | awk -F'-' '{print $1}')
-	lastVerseLine=$(echo $verseInfo | awk -F'-' '{print $2}')
-	lineNum=$(( $firstVerseLine + $verseNum - 1 ))
+	local totalVerse=$(echo $surahInfo | awk -F'|' '{print $2}')
+	local verseInfo=$(echo $surahInfo | awk -F'|' '{print $3}')
+	local firstVerseLine=$(echo $verseInfo | awk -F'-' '{print $1}')
+	local lastVerseLine=$(echo $verseInfo | awk -F'-' '{print $2}')
+	local lineNum=$(( $firstVerseLine + $verseNum - 1 ))
 
 	getVerseByLine $lineNum
 }
