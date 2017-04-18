@@ -77,9 +77,9 @@ function get_line(filename, line_no, callback) {
     });
 }
 
-var classFile = __dirname + '/classification.txt';
-var surahFile = __dirname + '/surah-list.txt';
-var translationFile = __dirname + '/quran-translation.txt';
+var classFile = __dirname + '/data/classification.txt';
+var surahFile = __dirname + '/data/id.list.txt';
+var translationFile = __dirname + '/data/id.indonesian.txt';
 
 getLineCount(classFile, function (count) {
 	var selectedVerse = getRandomInt(1, count);
