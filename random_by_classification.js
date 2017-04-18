@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+var lang = process.argv[2];
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -78,8 +80,14 @@ function get_line(filename, line_no, callback) {
 }
 
 var classFile = __dirname + '/data/classification.txt';
-var surahFile = __dirname + '/data/id.list.txt';
-var translationFile = __dirname + '/data/id.indonesian.txt';
+var surahFile = __dirname + '/data/' + lang + '.list.txt';
+var translationFile = __dirname + '/data/';
+
+if(lang === 'en') {
+	translationFile += 'en.sahih.txt';
+} else if(lang === 'id') {
+	translationFile += 'id.indonesian.txt';
+}
 
 getLineCount(classFile, function (count) {
 	var selectedVerse = getRandomInt(1, count);

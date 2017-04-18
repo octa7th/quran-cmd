@@ -1,9 +1,20 @@
 #!/bin/bash
 __bash_quran_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+if [ -z ${DEFAULT_QURAN_LANGUAGE+x} ]; then
+	DEFAULT_QURAN_LANGUAGE=en
+fi
+
+__translation_file="en.sahih"
+
 getVerseByLine ()
 {
-	local translationFile=$__bash_quran_dir/data/id.indonesian.txt
+	if [ $DEFAULT_QURAN_LANGUAGE = "en" ]; then
+		__translation_file="en.sahih"
+	elif [ $DEFAULT_QURAN_LANGUAGE = "id" ]; then
+		__translation_file="id.indonesian"
+	fi
+	local translationFile=$__bash_quran_dir/data/$__translation_file.txt
 
 	local lineNum=$1
 
@@ -11,7 +22,7 @@ getVerseByLine ()
 	local surahNum=$(echo $verseRaw | awk -F'|' '{print $1}')
 	local verseContent=$(echo $verseRaw | sed 's/^[0-9]*|[0-9]*|//')
 	local verseNum=$(echo $verseRaw | awk -F'|' '{print $2}')
-	local surahName=$(awk 'NR=='$surahNum $__bash_quran_dir/data/id.list.txt | awk -F'|' '{print $1}')
+	local surahName=$(awk 'NR=='$surahNum $__bash_quran_dir/data/$DEFAULT_QURAN_LANGUAGE.list.txt | awk -F'|' '{print $1}')
 
 	echo $verseContent
 	echo QS. $surahName'('$surahNum')':$verseNum
@@ -34,7 +45,7 @@ printRandomVerse ()
 printRandomByClassification ()
 {
 	local boxWidth=$(( $(tput cols)*1/2-4 ))
-	$__bash_quran_dir/random_by_classification.js | fold -w $boxWidth -s | boxes -d parchment -p l2r2
+	$__bash_quran_dir/random_by_classification.js $DEFAULT_QURAN_LANGUAGE | fold -w $boxWidth -s | boxes -d parchment -p l2r2
 	echo
 }
 
@@ -42,7 +53,7 @@ getVerse ()
 {
 	local surahNum=$(echo $1 | awk -F':' '{print $1}')
 	local verseNum=$(echo $1 | awk -F':' '{print $2}')
-	local surahInfo=$(awk 'NR=='$surahNum $__bash_quran_dir/data/id.list.txt)
+	local surahInfo=$(awk 'NR=='$surahNum $__bash_quran_dir/data/$DEFAULT_QURAN_LANGUAGE.list.txt)
 
 	local totalVerse=$(echo $surahInfo | awk -F'|' '{print $2}')
 	local verseInfo=$(echo $surahInfo | awk -F'|' '{print $3}')
